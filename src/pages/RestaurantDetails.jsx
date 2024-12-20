@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { restaurants } from "../data/restaurants";
 
 const RestaurantDetails = () => {
   const { id } = useParams();
   const restaurant = restaurants.find((r) => r.id.toString() === id);
-  //console.log(restaurant);
   const [selectedTable, setSelectedTable] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const [errors, setErrors] = useState({});
@@ -34,12 +33,15 @@ const RestaurantDetails = () => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
+      const existingBookings =
+        JSON.parse(localStorage.getItem("bookingInfo")) || [];
       const bookingData = {
         ...formData,
         table: selectedTable,
         restaurant: restaurant.name,
       };
-      localStorage.setItem("bookingInfo", JSON.stringify(bookingData));
+      existingBookings.push(bookingData);
+      localStorage.setItem("bookingInfo", JSON.stringify(existingBookings));
       navigate("/info");
     }
   };
