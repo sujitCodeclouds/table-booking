@@ -4,11 +4,15 @@ import { restaurants } from "../data/restaurants";
 
 const RestaurantDetails = () => {
   const { id } = useParams();
-  const restaurant = restaurants.find((r) => r.id.toString() === id);
+  const restaurant = restaurants.find((r) => String(r.id) === id);
   const [selectedTable, setSelectedTable] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  if (!restaurant) {
+    return <p className="text-red-500">Restaurant not found!</p>;
+  }
 
   const handleTableClick = (table) => {
     setSelectedTable(table);
@@ -27,28 +31,23 @@ const RestaurantDetails = () => {
     return newErrors;
   };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  const validationErrors = validateForm();
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-  } else {
-    const existingBookings = JSON.parse(localStorage.getItem("bookingInfo")) || [];
-    const bookingData = {
-      ...formData,
-      table: selectedTable,
-      restaurant: restaurant.name,
-    };
-    existingBookings.push(bookingData);
-    localStorage.setItem("bookingInfo", JSON.stringify(existingBookings));
-
-    // Delay navigation slightly to avoid potential issues
-    setTimeout(() => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      const existingBookings = JSON.parse(localStorage.getItem("bookingInfo")) || [];
+      const bookingData = {
+        ...formData,
+        table: selectedTable,
+        restaurant: restaurant.name,
+      };
+      existingBookings.push(bookingData);
+      localStorage.setItem("bookingInfo", JSON.stringify(existingBookings));
       navigate("/info");
-    }, 100);
-  }
-};
-
+    }
+  };
 
   return (
     <div className="container mx-auto mt-8">
