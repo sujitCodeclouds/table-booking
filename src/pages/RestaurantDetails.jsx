@@ -32,22 +32,32 @@ const RestaurantDetails = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-    } else {
-      const existingBookings = JSON.parse(localStorage.getItem("bookingInfo")) || [];
-      const bookingData = {
-        ...formData,
-        table: selectedTable,
-        restaurant: restaurant.name,
-      };
-      existingBookings.push(bookingData);
-      localStorage.setItem("bookingInfo", JSON.stringify(existingBookings));
-      navigate("/info");
+  e.preventDefault();
+  const validationErrors = validateForm();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+  } else {
+    let existingBookings = JSON.parse(localStorage.getItem("bookingInfo"));
+    
+    if (!Array.isArray(existingBookings)) {
+      existingBookings = []; // Ensure it's always an array
     }
-  };
+
+    const bookingData = {
+      ...formData,
+      table: selectedTable,
+      restaurant: restaurant.name,
+    };
+
+    existingBookings.push(bookingData);
+    localStorage.setItem("bookingInfo", JSON.stringify(existingBookings));
+
+    setTimeout(() => {
+      navigate("/info");
+    }, 100);
+  }
+};
+
 
   return (
     <div className="container mx-auto mt-8">
